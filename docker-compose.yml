@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+  web:
+    build: 
+      context: web
+      dockerfile: Dockerfile
+    command: start-local
+    # Environment variables for web at runtime
+    env_file: .env.web
+    restart: unless-stopped
+    ports:
+      - ${WEB_PORT}:3001
+    volumes:
+      - .:/app
+    networks: 
+      standardnotes_proxy:
+        aliases:
+          - web
+      web: {}
+
+  sync:
+    build: 
+      context: syncing-server
+      dockerfile: Dockerfile
+    command: start-local
+    # Environment variables for sync-server at runtime
+    env_file: .env.sync-server
+    restart: unless-stopped
+    ports:
+      - ${SYNC_PORT}:3000
+    networks:
+      standardnotes_proxy:
+        aliases:
+          - syncing_server
+      syncing_server: {}
+    volumes:
+      - .:/syncing-server
+
+  db:
+    image: mysql:5.6
+    env_file: .env.db
+    expose:
+      - 3306
+    ports:
+      - 3306
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - syncing_server
+
+  cache:
+    image: redis:6.0-alpine
+    volumes:
+      - ./cache:/data
+    expose:
+      - 6379
+    ports:
+      - 6379
+    networks:
+      - syncing_server
+
+networks:
+  web:
+    name: web
+  syncing_server:
+    name: syncing_server
+  standardnotes_proxy:
+    name: standardnotes
