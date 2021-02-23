@@ -1,11 +1,10 @@
 version: '3.8'
 services:
-  app:
+  sync:
     build:
-      context: .
+      context: syncing-server
+      dockerfile: ./syncing-server/Dockerfile
       args:
         optimize_for_raspberry_pi: "true"
-    environment: 
-      RAILS_ENV: raspberry_pi
   db:
     image: tobi312/rpi-mariadb

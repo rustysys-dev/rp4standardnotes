@@ -3,7 +3,8 @@ services:
   web:
     build: 
       context: web
-      dockerfile: Dockerfile
+      dockerfile: ./web/Dockerfile
+    entrypoint: web/docker/entrypoint.sh
     command: start-local
     # Environment variables for web at runtime
     env_file: .env.web
@@ -21,10 +22,14 @@ services:
   sync:
     build: 
       context: syncing-server
-      dockerfile: Dockerfile
-    command: start-local
+      dockerfile: ./syncing-server/Dockerfile
+    entrypoint: ls
+    command: "-la"
+    # command: start-local
     # Environment variables for sync-server at runtime
-    env_file: .env.sync-server
+    env_file: 
+      - .env.sync-server
+      - .env.db
     restart: unless-stopped
     ports:
       - ${SYNC_PORT}:3000
