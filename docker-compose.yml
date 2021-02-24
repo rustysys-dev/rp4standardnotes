@@ -2,9 +2,7 @@ version: '3.8'
 services:
   web:
     build: 
-      context: web
-      dockerfile: ./web/Dockerfile
-    entrypoint: web/docker/entrypoint.sh
+      context: ./web
     command: start-local
     # Environment variables for web at runtime
     env_file: .env.web
@@ -12,7 +10,7 @@ services:
     ports:
       - ${WEB_PORT}:3001
     volumes:
-      - .:/app
+      - ./web:/app
     networks: 
       standardnotes_proxy:
         aliases:
@@ -21,11 +19,8 @@ services:
 
   sync:
     build: 
-      context: syncing-server
-      dockerfile: ./syncing-server/Dockerfile
-    entrypoint: ls
-    command: "-la"
-    # command: start-local
+      context: ./syncing-server
+    command: start-local
     # Environment variables for sync-server at runtime
     env_file: 
       - .env.sync-server
@@ -39,7 +34,7 @@ services:
           - syncing_server
       syncing_server: {}
     volumes:
-      - .:/syncing-server
+      - ./syncing-server:/syncing-server
 
   db:
     image: mysql:5.6

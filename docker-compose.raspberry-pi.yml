@@ -2,8 +2,7 @@ version: '3.8'
 services:
   sync:
     build:
-      context: syncing-server
-      dockerfile: ./syncing-server/Dockerfile
+      context: ./syncing-server
       args:
         optimize_for_raspberry_pi: "true"
   db:
