@@ -4,7 +4,6 @@ services:
     build: 
       context: ./web
     command: start-local
-    # Environment variables for web at runtime
     env_file: .env.web
     restart: unless-stopped
     ports:
@@ -12,16 +11,12 @@ services:
     volumes:
       - ./web:/app
     networks: 
-      standardnotes_proxy:
-        aliases:
-          - web
-      web: {}
+      - web
 
   sync:
     build: 
       context: ./syncing-server
     command: start-local
-    # Environment variables for sync-server at runtime
     env_file: 
       - .env.sync-server
       - .env.db
@@ -29,10 +24,8 @@ services:
     ports:
       - ${SYNC_PORT}:3000
     networks:
-      standardnotes_proxy:
-        aliases:
-          - syncing_server
-      syncing_server: {}
+      - web
+      - sync
     volumes:
       - ./syncing-server:/syncing-server
 
@@ -48,7 +41,7 @@ services:
     volumes:
       - ./data:/var/lib/mysql
     networks:
-      - syncing_server
+      - sync
 
   cache:
     image: redis:6.0-alpine
@@ -59,12 +52,10 @@ services:
     ports:
       - 6379
     networks:
-      - syncing_server
+      - sync
 
 networks:
   web:
     name: web
-  syncing_server:
-    name: syncing_server
-  standardnotes_proxy:
-    name: standardnotes
+  sync:
+    name: sync
