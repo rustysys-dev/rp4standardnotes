@@ -3,7 +3,8 @@ services:
   web:
     build: 
       context: ./web
-    command: start-local
+    entrypoint: [ "sleep", "10000" ]
+    # command: start-local
     env_file: .env.web
     restart: unless-stopped
     ports:
