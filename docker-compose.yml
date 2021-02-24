@@ -18,8 +18,8 @@ services:
       context: ./syncing-server
     command: start-local
     env_file: 
-      - .env.sync-server
-      - .env.db
+      - .env.sync
+      - .env
     restart: unless-stopped
     ports:
       - ${SYNC_PORT}:3000
@@ -31,7 +31,11 @@ services:
 
   db:
     image: mysql:5.6
-    env_file: .env.db
+    environment:
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
     expose:
       - 3306
     ports:
